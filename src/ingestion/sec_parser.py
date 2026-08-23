@@ -198,3 +198,15 @@ def save_financial_dataframe(df: pd.DataFrame, output_path: str | Path = "data/p
     df.to_csv(output_path, index=False)
 
     return output_path
+
+
+def save_silver_company_facts(df: pd.DataFrame, cik: str, output_dir: str = "data/processed/silver", ) -> Path:
+
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    file_path = output_path / f"companyfacts_{cik}.parquet"
+
+    df.to_parquet(file_path, index=False, )
+
+    return file_path
