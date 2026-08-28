@@ -1,6 +1,9 @@
+import argparse
+
 from src.ingestion.sec_api import save_raw_company_facts
 from src.ingestion.sec_parser import (load_raw_company_facts, parse_financial_facts, create_financial_dataframe, save_silver_company_facts, )
 from src.quality.data_quality import (deduplicate_financial_facts, validate_data, is_quality_valid, INSTANT_CONCEPTS, PERIOD_CONCEPTS, )
+from src.config import COMPANIES
 
 CONCEPTS = [
     "Assets",
@@ -11,6 +14,17 @@ CONCEPTS = [
     "OperatingIncomeLoss",
     "NetIncomeLoss",
 ]
+
+def parse_arguments() -> argparse.Namespace:
+
+    parser = argparse.ArgumentParser(description="Run the financial data engineering pipeline.")
+
+    parser.add_argument("cik", help="SEC Central Index Key (CIK) of the company to process.",)
+
+    return parser.parse_args()
+
+def normalize_cik(cik: str) -> str:
+    return cik.zfill(10)
 
 def run_pipeline(cik: str) -> None:
 
@@ -85,6 +99,7 @@ def run_pipeline(cik: str) -> None:
     print("=" * 60)
 
 if __name__ == "__main__":
-    run_pipeline("0000320193")
-
-
+    for company_name, cik in COMPANIES.items():
+        print(f"\nProcessing company: {company_name}")
+        print(f"CIK: {cik}")
+        run_pipeline(cik)

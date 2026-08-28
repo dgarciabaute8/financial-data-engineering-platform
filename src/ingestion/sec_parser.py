@@ -58,11 +58,15 @@ def parse_concept_records(data: dict, concept: str, unit: str = "USD") -> list[d
     # Access the US GAAP section of the SEC Company Facts response.
     us_gaap = data["facts"]["us-gaap"]
 
+    # Check whether the requested concept exists.
+    if concept not in us_gaap:
+        return []
+
     # Select the requested financial concept.
     concept_data = us_gaap[concept]
 
     # Select the records corresponding to the requested unit.
-    records = concept_data["units"][unit]
+    records = concept_data.get("units", {}).get(unit, [])
 
     # List that will contain the normalized records.
     parsed_records = []

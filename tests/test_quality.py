@@ -1,6 +1,6 @@
 import pandas as pd
 
-from src.quality.data_quality import (validate_required_columns, validate_concepts, validate_units, validate_nulls, find_duplicate_records, )
+from src.quality.data_quality import (validate_required_columns, validate_concepts, validate_units, validate_nulls, find_duplicate_records, validate_data, is_quality_valid, )
 
 
 def create_valid_dataframe() -> pd.DataFrame:
@@ -123,3 +123,23 @@ def test_required_null_is_detected():
     result = validate_nulls(df, ["company_cik", "concept", "value"], )
 
     assert result == {"value": 1}
+
+
+def test_quality_gate_passes_for_valid_dataframe():
+
+    df = create_valid_dataframe()
+
+    quality_report = validate_data(df)
+
+    assert is_quality_valid(quality_report) is True
+
+
+def test_quality_gate_fails_for_invalid_dataframe():
+
+    df = create_valid_dataframe()
+
+    df.loc[0, "unit"] = "EUR"
+
+    quality_report = validate_data(df)
+
+    assert is_quality_valid(quality_report) is False
